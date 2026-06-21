@@ -28,3 +28,33 @@ def get_students(class_: list[str] | None = Query(None, alias="class")):
     return {
         "students": data.to_dict(orient="records")
     }
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import List
+from textblob import TextBlob
+
+app = FastAPI()
+
+class SentimentRequest(BaseModel):
+    sentences: List[str]
+
+@app.post("/sentiment")
+async def sentiment(payload: SentimentRequest):
+    results = []
+
+    for sentence in payload.sentences:
+        polarity = TextBlob(sentence).sentiment.polarity
+
+        if polarity > 0.1:
+            label = "happy"
+        elif polarity < -0.1:
+            label = "sad"
+        else:
+            label = "neutral"
+
+        results.append({
+            "sentence": sentence,
+            "sentiment": label
+        })
+
+    return {"results": results}
