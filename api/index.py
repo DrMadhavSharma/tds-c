@@ -1,6 +1,10 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
+from pydantic import BaseModel
+from typing import List
+from textblob import TextBlob
+
 
 app = FastAPI()
 
@@ -28,12 +32,8 @@ def get_students(class_: list[str] | None = Query(None, alias="class")):
     return {
         "students": data.to_dict(orient="records")
     }
-from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import List
-from textblob import TextBlob
 
-app = FastAPI()
+
 
 class SentimentRequest(BaseModel):
     sentences: List[str]
